@@ -35,6 +35,7 @@ name = '';  # Contact name
 phone = ''; # Contact phone
 email = ''; # Contact email
 nick = '';  # Contact nickname
+org = ''; # Contact organisation
 count = 0; # Contacts count
 
 # Open input file, read-only
@@ -60,7 +61,7 @@ ofile.write(u'\n')
 for line in cfile.readlines():
     # Name field
     if (line.startswith('FN')):
-        name = line.split(':')[1]
+        name = line.split(':')[1].strip()
         #name = unicode(name, 'utf-8')
         ofile.write(u'\n')
         ofile.write(u'[%d]\n' % count)
@@ -75,7 +76,8 @@ for line in cfile.readlines():
         name = name.encode('utf-8', 'replace')
         if opts.debug:
             print name,
-        ofile.write('name=%s' % name,)
+        if (name!=""):
+            ofile.write('name=%s\n' % name,)
     elif (line.startswith('EMAIL')):
         email = line.split(':')[1]
         ofile.write(u'email=%s' % email,)
@@ -114,6 +116,11 @@ for line in cfile.readlines():
         except IndexError:
             nick = line.split(':')[1]
         ofile.write(u'nick=%s\n' % nick.strip())
+    elif (line.startswith('ORG')):
+        org = line.split(':')[1].strip()
+        if ((name=="") & (org!="")):
+            ofile.write('name=%s\n' % org,)
+        ofile.write(u'custom1=%s\n' % org,)
     else:
         continue;
 
