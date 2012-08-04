@@ -79,22 +79,22 @@ for line in cfile.readlines():
         if (name!=""):
             ofile.write('name=%s\n' % name,)
     elif (line.startswith('EMAIL')):
-        email = line.split(':')[1]
-        ofile.write(u'email=%s' % email,)
+        email = line.split(':')[1].strip()
+        ofile.write(u'email=%s\n' % email,)
     elif (line.startswith('TEL')):
         # Verify if it's a fax number
         parts = line.split(';')
         if (len(parts) > 2): # Fax number
-            phone = parts[2].split(':')[1]
-            ofile.write(u'fax=%s' % phone,)
+            phone = parts[2].split(':')[1].strip()
+            ofile.write(u'fax=%s\n' % phone,)
             continue
 
         # Normal telephone number
         try:
             tel = parts[1]
         except IndexError: # Phone type not defined (other in gmail)
-            phone = line.split(':')[1]
-            ofile.write(u'mobile=%s' % phone,)
+            phone = line.split(':')[1].strip()
+            ofile.write(u'mobile=%s\n' % phone,)
             continue
 
         fulltype = tel.split('=')[1]
@@ -102,20 +102,20 @@ for line in cfile.readlines():
         if opts.debug:
             print u'type=%s' % type,
 
-        phone = line.split(':')[1]
+        phone = line.split(':')[1].strip()
         if (type == 'HOME'):
-            ofile.write(u'phone=%s' % phone,)
+            ofile.write(u'phone=%s\n' % phone,)
         if (type == 'CELL'):
-            ofile.write(u'mobile=%s' % phone,)
+            ofile.write(u'mobile=%s\n' % phone,)
         if (type == 'WORK'):
-            ofile.write(u'workphone=%s' % phone,)
+            ofile.write(u'workphone=%s\n' % phone,)
     elif (line.startswith('NOTE')):
         # Notes / nicknames
         try:
-            nick = line.split(':')[2]
+            nick = line.split(':')[2].strip()
         except IndexError:
-            nick = line.split(':')[1]
-        ofile.write(u'nick=%s\n' % nick.strip())
+            nick = line.split(':')[1].strip()
+        ofile.write(u'nick=%s\n' % nick,)
     elif (line.startswith('ORG')):
         org = line.split(':')[1].strip()
         if ((name=="") & (org!="")):
