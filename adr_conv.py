@@ -36,6 +36,7 @@ phone = ''; # Contact phone
 email = ''; # Contact email
 nick = '';  # Contact nickname
 org = ''; # Contact organisation
+note = ''; # Any notes
 count = 0; # Contacts count
 
 # Open input file, read-only
@@ -109,8 +110,8 @@ for line in cfile.readlines():
             ofile.write(u'mobile=%s\n' % phone,)
         if (type == 'WORK'):
             ofile.write(u'workphone=%s\n' % phone,)
-    elif (line.startswith('NOTE')):
-        # Notes / nicknames
+    elif (line.startswith('NICKNAME')):
+        # Nickname
         try:
             nick = line.split(':')[2].strip()
         except IndexError:
@@ -121,6 +122,11 @@ for line in cfile.readlines():
         if ((name=="") & (org!="")):
             ofile.write('name=%s\n' % org,)
         ofile.write(u'custom1=%s\n' % org,)
+    elif (line.startswith('NOTE')):
+        notea = line.split(':')
+        notea.pop(0)
+        note = " ".join(notea).strip()
+        ofile.write(u'note=%s\n' % note)
     else:
         continue;
 
