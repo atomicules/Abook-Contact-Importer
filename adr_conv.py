@@ -37,6 +37,8 @@ email = ''; # Contact email
 nick = '';  # Contact nickname
 org = ''; # Contact organisation
 note = ''; # Any notes
+
+adr_count = 0
 count = 0; # Contacts count
 
 # Open input file, read-only
@@ -67,6 +69,7 @@ for line in cfile.readlines():
         ofile.write(u'\n')
         ofile.write(u'[%d]\n' % count)
         count += 1
+        adr_count = 0
         try:
             name = unicode(name, 'ascii')
         except UnicodeError:
@@ -110,6 +113,40 @@ for line in cfile.readlines():
             ofile.write(u'mobile=%s\n' % phone,)
         if (type == 'WORK'):
             ofile.write(u'workphone=%s\n' % phone,)
+    elif (line.startswith('ADR')):
+        adr_count+=1
+        #reset fields
+        adr_address = ''
+        adr_address2 = ''
+        adr_city = ''
+        adr_state = ''
+        adr_zip = ''
+        adr_country = ''
+        parts = line.split(':')
+        adra = parts[1].split(';')
+        try:
+            #po box is 0, not considered here.
+            adr_address = adra[2].strip()
+            adr_address2 = adra[1].strip() #local area
+            adr_city = adra[3].strip()
+            adr_state = adra[4].strip()
+            adr_zip = adra[5].strip()
+            adr_country = adra[6].strip()
+        except IndexError:#Need to account for index out of range because of malformed addresses.
+            pass #because don't care
+        if (adr_count <=1):
+            #put first address in abook fields
+            if (adr_address != ""): ofile.write(u'address=%s\n' % adr_address,)
+            if (adr_address2 != ""): ofile.write(u'address2=%s\n' % adr_address2,)
+            if (adr_city != ""): ofile.write(u'city=%s\n' % adr_city,)
+            if (adr_state != ""): ofile.write(u'state=%s\n' % adr_state,)
+            if (adr_zip != ""): ofile.write(u'zip=%s\n' % adr_zip,)
+            if (adr_country != ""): ofile.write(u'country=%s\n' % adr_country,)
+        if ((adr_count <=4) & (adr_count >1)):
+            #Put additional addresses in custom fields as comma separated string
+            adran = [adr_address2, adr_address, adr_city, adr_state, adr_zip, adr_country]
+            adr_custom = ", ".join(filter(None, adran))
+            ofile.write(u'custom%i=%s\n' % (adr_count, adr_custom),)
     elif (line.startswith('NICKNAME')):
         # Nickname
         try:
