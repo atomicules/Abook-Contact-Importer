@@ -39,6 +39,8 @@ org = ''; # Contact organisation
 note = ''; # Any notes
 
 adr_count = 0
+email_array = []
+
 count = 0; # Contacts count
 
 # Open input file, read-only
@@ -83,8 +85,9 @@ for line in cfile.readlines():
         if (name!=""):
             ofile.write('name=%s\n' % name,)
     elif (line.startswith('EMAIL')):
+        #Need to collect all email addresses.
         email = line.split(':')[1].strip()
-        ofile.write(u'email=%s\n' % email,)
+        email_array.append(email)
     elif (line.startswith('TEL')):
         # Verify if it's a fax number
         parts = line.split(';')
@@ -164,6 +167,12 @@ for line in cfile.readlines():
         notea.pop(0)
         note = " ".join(notea).strip()
         ofile.write(u'note=%s\n' % note)
+    elif (line.startswith('END')):
+        #Write out email addresses as one line
+        if (len(email_array) > 0):
+            ofile.write(u'email=%s\n' % ", ".join(email_array),)
+            #reset email array
+            email_array = []
     else:
         continue;
 
